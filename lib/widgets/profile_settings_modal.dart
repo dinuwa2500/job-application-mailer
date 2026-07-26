@@ -56,9 +56,18 @@ class _ProfileSettingsModalState extends State<ProfileSettingsModal> {
       widget.onSave(updated);
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Default profile and email settings saved!'),
-          backgroundColor: Color(0xFF10B981),
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
+              SizedBox(width: 8),
+              Text('Profile & Sender settings saved!'),
+            ],
+          ),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFF10B981),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -72,7 +81,7 @@ class _ProfileSettingsModalState extends State<ProfileSettingsModal> {
       padding: EdgeInsets.only(
         left: 20,
         right: 20,
-        top: 20,
+        top: 16,
         bottom: MediaQuery.of(context).viewInsets.bottom + 20,
       ),
       decoration: BoxDecoration(
@@ -80,15 +89,17 @@ class _ProfileSettingsModalState extends State<ProfileSettingsModal> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Grab handle
               Center(
                 child: Container(
-                  width: 40,
+                  width: 44,
                   height: 4,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
@@ -97,12 +108,14 @@ class _ProfileSettingsModalState extends State<ProfileSettingsModal> {
                 ),
               ),
               const SizedBox(height: 16),
+
+              // Title Header
               Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -120,12 +133,14 @@ class _ProfileSettingsModalState extends State<ProfileSettingsModal> {
                           'Sender & Profile Settings',
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
                         ),
                         Text(
-                          'Saved locally for default email auto-fill',
+                          'Auto-fills your details in generated application emails',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
+                            fontSize: 12,
                           ),
                         ),
                       ],
@@ -139,81 +154,134 @@ class _ProfileSettingsModalState extends State<ProfileSettingsModal> {
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
+                style: const TextStyle(fontSize: 14),
                 decoration: InputDecoration(
-                  labelText: 'Default Sender Email Address',
-                  hintText: 'e.g. lakviru.perera@gmail.com',
-                  prefixIcon: const Icon(Icons.mark_email_read_outlined),
-                  helperText: 'Your default sender email account',
+                  labelText: 'Your Email Address (Sender)',
+                  hintText: 'e.g. yourname@gmail.com',
+                  prefixIcon: Icon(
+                    Icons.mark_email_read_outlined,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  ),
                   filled: true,
+                  fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
               // Name Field
               TextFormField(
                 controller: _nameController,
-                validator: (v) => v == null || v.isEmpty ? 'Please enter your name' : null,
+                style: const TextStyle(fontSize: 14),
+                validator: (v) => v == null || v.trim().isEmpty ? 'Please enter your full name' : null,
                 decoration: InputDecoration(
                   labelText: 'Full Name',
-                  prefixIcon: const Icon(Icons.person_outline),
+                  hintText: 'e.g. Lakviru Perera',
+                  prefixIcon: Icon(
+                    Icons.person_outline_rounded,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  ),
                   filled: true,
+                  fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
               // Phone Number Field
               TextFormField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
-                validator: (v) => v == null || v.isEmpty ? 'Please enter your phone number' : null,
+                style: const TextStyle(fontSize: 14),
+                validator: (v) => v == null || v.trim().isEmpty ? 'Please enter contact phone number' : null,
                 decoration: InputDecoration(
-                  labelText: 'Contact Phone Number',
-                  prefixIcon: const Icon(Icons.phone_outlined),
+                  labelText: 'Phone Number',
+                  hintText: 'e.g. 0704224786',
+                  prefixIcon: Icon(
+                    Icons.phone_outlined,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  ),
                   filled: true,
+                  fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
               // Degree Field
               TextFormField(
                 controller: _degreeController,
                 maxLines: 2,
-                validator: (v) => v == null || v.isEmpty ? 'Please enter education info' : null,
+                style: const TextStyle(fontSize: 14),
+                validator: (v) => v == null || v.trim().isEmpty ? 'Please enter degree or education details' : null,
                 decoration: InputDecoration(
-                  labelText: 'Education / Degree Title',
-                  prefixIcon: const Icon(Icons.school_outlined),
+                  labelText: 'Degree / Education Title',
+                  hintText: 'e.g. BSc (Hons) in Information Technology...',
+                  prefixIcon: Icon(
+                    Icons.school_outlined,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  ),
                   filled: true,
+                  fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
               // Skills Field
               TextFormField(
                 controller: _skillsController,
                 maxLines: 2,
-                validator: (v) => v == null || v.isEmpty ? 'Please enter technical skills' : null,
+                style: const TextStyle(fontSize: 14),
+                validator: (v) => v == null || v.trim().isEmpty ? 'Please enter key technical skills' : null,
                 decoration: InputDecoration(
-                  labelText: 'Technical Skills & Technologies',
-                  prefixIcon: const Icon(Icons.code_outlined),
+                  labelText: 'Key Skills & Stack',
+                  hintText: 'e.g. React, Node.js, Flutter, Java, Python...',
+                  prefixIcon: Icon(
+                    Icons.code_outlined,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  ),
                   filled: true,
+                  fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
 
               SizedBox(
                 width: double.infinity,
@@ -231,6 +299,7 @@ class _ProfileSettingsModalState extends State<ProfileSettingsModal> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
+                    elevation: 2,
                   ),
                 ),
               ),

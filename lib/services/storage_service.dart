@@ -8,6 +8,9 @@ class StorageService {
   static const String _lastRoleKey = 'last_chosen_role';
   static const String _lastCustomRoleKey = 'last_custom_role';
   static const String _lastRecipientKey = 'last_recipient_email';
+  static const String _recentRecipientsKey = 'recent_recipients_list';
+  static const String _lastCompanyKey = 'last_company_name';
+  static const String _lastToneKey = 'last_email_tone';
 
   static Future<UserProfile> getProfile() async {
     final prefs = await SharedPreferences.getInstance();
@@ -17,7 +20,6 @@ class StorageService {
         final map = jsonDecode(profileJson) as Map<String, dynamic>;
         return UserProfile.fromJson(map);
       } catch (e) {
-        // Fallback on parse error
         return UserProfile.defaultProfile();
       }
     }
@@ -73,5 +75,45 @@ class StorageService {
   static Future<void> saveLastRecipientEmail(String email) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_lastRecipientKey, email);
+
+    if (email.trim().isNotEmpty && email.contains('@')) {
+      await addRecentRecipient(email.trim());
+    }
+  }
+
+  static Future<List<String>> getRecentRecipients() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(_recentRecipientsKey) ?? [];
+  }
+
+  static Future<void> addRecentRecipient(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> list = prefs.getStringList(_recentRecipientsKey) ?? [];
+    list.removeWhere((e) => e.toLowerCase() == email.toLowerCase());
+    list.insert(0, email);
+    if (list.length > 5) {
+      list = list.sublist(0, 5);
+    }
+    await prefs.setStringList(_recentRecipientsKey, list);
+  }
+
+  static Future<String?> getLastCompanyName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_lastCompanyKey);
+  }
+
+  static Future<void> saveLastCompanyName(String company) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_lastCompanyKey, company);
+  }
+
+  static Future<String?> getLastTone() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_lastToneKey) ?? 'standard';
+  }
+
+  static Future<void> saveLastTone(String tone) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_lastToneKey, tone);
   }
 }

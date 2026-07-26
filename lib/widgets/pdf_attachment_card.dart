@@ -61,19 +61,28 @@ class PdfAttachmentCard extends StatelessWidget {
     final theme = Theme.of(context);
     final hasAttachment = pdfPath != null && pdfPath!.isNotEmpty;
 
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: hasAttachment
-            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.25)
-            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(16),
+            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.22)
+            : theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: hasAttachment
-              ? theme.colorScheme.primary.withValues(alpha: 0.5)
-              : theme.colorScheme.outline.withValues(alpha: 0.2),
+              ? theme.colorScheme.primary.withValues(alpha: 0.45)
+              : theme.colorScheme.outline.withValues(alpha: 0.18),
           width: hasAttachment ? 1.5 : 1.0,
         ),
+        boxShadow: [
+          if (hasAttachment)
+            BoxShadow(
+              color: theme.colorScheme.primary.withValues(alpha: 0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,9 +96,9 @@ class PdfAttachmentCard extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: hasAttachment
-                          ? Colors.redAccent.withValues(alpha: 0.15)
-                          : theme.colorScheme.onSurface.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                          ? Colors.redAccent.withValues(alpha: 0.12)
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
                       Icons.picture_as_pdf_rounded,
@@ -98,11 +107,45 @@ class PdfAttachmentCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Text(
-                    'Attach CV / Resume (PDF)',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'Resume / CV (PDF)',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: hasAttachment
+                                  ? const Color(0xFF10B981).withValues(alpha: 0.15)
+                                  : Colors.orange.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              hasAttachment ? 'Attached' : 'Missing',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: hasAttachment ? const Color(0xFF10B981) : Colors.orange,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        hasAttachment ? 'Ready to send' : 'Attach your latest resume',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -114,6 +157,7 @@ class PdfAttachmentCard extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -124,72 +168,93 @@ class PdfAttachmentCard extends StatelessWidget {
           ),
           if (hasAttachment) ...[
             const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        pdfName ?? 'Attached_CV.pdf',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _getFileSizeString(pdfPath!),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface.withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: theme.colorScheme.outline.withValues(alpha: 0.1),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.insert_drive_file_rounded,
+                    color: Colors.redAccent,
+                    size: 24,
                   ),
-                ),
-                IconButton(
-                  tooltip: 'Change PDF',
-                  icon: const Icon(Icons.swap_horiz_rounded),
-                  color: theme.colorScheme.primary,
-                  onPressed: () => _pickPdf(context),
-                ),
-                IconButton(
-                  tooltip: 'Remove Attachment',
-                  icon: const Icon(Icons.delete_outline_rounded),
-                  color: Colors.redAccent,
-                  onPressed: onPdfRemoved,
-                ),
-              ],
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          pdfName ?? 'Attached_CV.pdf',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _getFileSizeString(pdfPath!),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Change PDF',
+                    icon: const Icon(Icons.swap_horiz_rounded),
+                    color: theme.colorScheme.primary,
+                    onPressed: () => _pickPdf(context),
+                  ),
+                  IconButton(
+                    tooltip: 'Remove Attachment',
+                    icon: const Icon(Icons.delete_outline_rounded),
+                    color: Colors.redAccent,
+                    onPressed: onPdfRemoved,
+                  ),
+                ],
+              ),
             ),
-            const Divider(height: 20),
+            const SizedBox(height: 10),
             InkWell(
               onTap: () => onToggleDefault(!isDefaultPdf),
               borderRadius: BorderRadius.circular(8),
-              child: Row(
-                children: [
-                  SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: Checkbox(
-                      value: isDefaultPdf,
-                      onChanged: (val) {
-                        if (val != null) onToggleDefault(val);
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: Checkbox(
+                        value: isDefaultPdf,
+                        onChanged: (val) {
+                          if (val != null) onToggleDefault(val);
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        activeColor: theme.colorScheme.primary,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Save as default CV for future emails',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurface,
+                    const SizedBox(width: 8),
+                    Text(
+                      'Save as default CV for all future applications',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],

@@ -28,33 +28,101 @@ class RoleSelectorWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+                color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
-                Icons.work_outline_rounded,
+                Icons.work_history_rounded,
                 color: theme.colorScheme.primary,
                 size: 20,
               ),
             ),
             const SizedBox(width: 10),
-            Text(
-              'Select Target Role',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Target Application Role',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Select position to auto-customize subject & body',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
+        const SizedBox(height: 14),
+
+        // Quick Role Chips
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: [
+              _buildRoleChip(
+                context: context,
+                label: 'Software Eng',
+                value: PredefinedRoles.internSoftwareEngineer,
+                icon: Icons.code_rounded,
+              ),
+              const SizedBox(width: 8),
+              _buildRoleChip(
+                context: context,
+                label: 'Frontend Dev',
+                value: PredefinedRoles.internFrontendDeveloper,
+                icon: Icons.devices_rounded,
+              ),
+              const SizedBox(width: 8),
+              _buildRoleChip(
+                context: context,
+                label: 'Full Stack',
+                value: PredefinedRoles.internFullStackDeveloper,
+                icon: Icons.layers_rounded,
+              ),
+              const SizedBox(width: 8),
+              _buildRoleChip(
+                context: context,
+                label: 'Backend Dev',
+                value: PredefinedRoles.internBackendDeveloper,
+                icon: Icons.dns_rounded,
+              ),
+              const SizedBox(width: 8),
+              _buildRoleChip(
+                context: context,
+                label: 'QA Eng',
+                value: PredefinedRoles.internQaEngineer,
+                icon: Icons.bug_report_rounded,
+              ),
+              const SizedBox(width: 8),
+              _buildRoleChip(
+                context: context,
+                label: 'Custom...',
+                value: PredefinedRoles.other,
+                icon: Icons.edit_note_rounded,
+              ),
+            ],
+          ),
+        ),
+
         const SizedBox(height: 12),
-        // Dropdown menu
+
+        // Dropdown menu container
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: theme.colorScheme.outline.withValues(alpha: 0.2),
+              color: theme.colorScheme.outline.withValues(alpha: 0.18),
             ),
           ),
           child: DropdownButtonHideUnderline(
@@ -64,8 +132,9 @@ class RoleSelectorWidget extends StatelessWidget {
                   : PredefinedRoles.other,
               isExpanded: true,
               icon: Icon(
-                Icons.keyboard_arrow_down_rounded,
+                Icons.unfold_more_rounded,
                 color: theme.colorScheme.primary,
+                size: 20,
               ),
               dropdownColor: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
@@ -87,6 +156,7 @@ class RoleSelectorWidget extends StatelessWidget {
                       Text(
                         role,
                         style: TextStyle(
+                          fontSize: 14,
                           fontWeight: role == selectedRole
                               ? FontWeight.bold
                               : FontWeight.normal,
@@ -108,55 +178,28 @@ class RoleSelectorWidget extends StatelessWidget {
           ),
         ),
 
-        // Quick Selector Chips
-        const SizedBox(height: 10),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              _buildRoleChip(
-                context: context,
-                label: 'Software Engineer',
-                value: PredefinedRoles.internSoftwareEngineer,
-              ),
-              const SizedBox(width: 8),
-              _buildRoleChip(
-                context: context,
-                label: 'Frontend Dev',
-                value: PredefinedRoles.internFrontendDeveloper,
-              ),
-              const SizedBox(width: 8),
-              _buildRoleChip(
-                context: context,
-                label: 'Full Stack Dev',
-                value: PredefinedRoles.internFullStackDeveloper,
-              ),
-              const SizedBox(width: 8),
-              _buildRoleChip(
-                context: context,
-                label: 'Custom...',
-                value: PredefinedRoles.other,
-              ),
-            ],
-          ),
-        ),
-
         // Custom role text field if "Other" is selected
         if (isCustom) ...[
           const SizedBox(height: 14),
           TextFormField(
             initialValue: customRoleText,
             onChanged: onCustomRoleChanged,
+            style: const TextStyle(fontSize: 14),
             decoration: InputDecoration(
-              labelText: 'Enter Custom Position Title',
-              hintText: 'e.g. intern QA engineer, Mobile Developer...',
-              prefixIcon: const Icon(Icons.edit_outlined),
+              labelText: 'Custom Position Title',
+              hintText: 'e.g. Mobile Developer Intern, Data Analyst...',
+              prefixIcon: Icon(
+                Icons.edit_outlined,
+                color: theme.colorScheme.primary,
+                size: 20,
+              ),
               filled: true,
               fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide(
-                  color: theme.colorScheme.primary,
+                  color: theme.colorScheme.primary.withValues(alpha: 0.5),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
@@ -177,32 +220,44 @@ class RoleSelectorWidget extends StatelessWidget {
     required BuildContext context,
     required String label,
     required String value,
+    required IconData icon,
   }) {
     final isSelected = selectedRole == value;
     final theme = Theme.of(context);
 
-    return FilterChip(
-      selected: isSelected,
-      label: Text(label),
-      labelStyle: TextStyle(
-        fontSize: 12,
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        color: isSelected
-            ? theme.colorScheme.onPrimary
-            : theme.colorScheme.onSurfaceVariant,
-      ),
-      selectedColor: theme.colorScheme.primary,
-      backgroundColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-      checkmarkColor: theme.colorScheme.onPrimary,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      child: ChoiceChip(
+        selected: isSelected,
+        avatar: Icon(
+          icon,
+          size: 16,
           color: isSelected
-              ? Colors.transparent
-              : theme.colorScheme.outline.withValues(alpha: 0.3),
+              ? theme.colorScheme.onPrimary
+              : theme.colorScheme.onSurfaceVariant,
         ),
+        label: Text(label),
+        labelStyle: TextStyle(
+          fontSize: 12,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+          color: isSelected
+              ? theme.colorScheme.onPrimary
+              : theme.colorScheme.onSurfaceVariant,
+        ),
+        selectedColor: theme.colorScheme.primary,
+        backgroundColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        showCheckmark: false,
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: isSelected
+                ? Colors.transparent
+                : theme.colorScheme.outline.withValues(alpha: 0.2),
+          ),
+        ),
+        onSelected: (_) => onRoleChanged(value),
       ),
-      onSelected: (_) => onRoleChanged(value),
     );
   }
 }
