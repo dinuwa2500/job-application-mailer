@@ -30,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isDefaultPdf = false;
 
   String _selectedTone = 'standard';
+  String? _customSubjectText;
   String? _customBodyText;
   bool _isLoading = true;
 
@@ -47,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final recentList = await StorageService.getRecentRecipients();
     final lastCompany = await StorageService.getLastCompanyName();
     final lastTone = await StorageService.getLastTone();
+    final customSubject = await StorageService.getCustomSubject();
     final customTemplate = await StorageService.getCustomTemplate();
 
     setState(() {
@@ -66,6 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       if (lastTone != null) {
         _selectedTone = lastTone;
+      }
+      if (customSubject != null) {
+        _customSubjectText = customSubject;
       }
       if (customTemplate != null) {
         _customBodyText = customTemplate;
@@ -90,10 +95,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String get _currentSubject {
+    if (_customSubjectText != null && _customSubjectText!.isNotEmpty) {
+      return _customSubjectText!;
+    }
     return EmailTemplate.generateSubject(
       roleTitle: _effectiveRole,
       companyName: _companyNameController.text.trim(),
-      applicantName: _profile.name,
     );
   }
 
@@ -645,6 +652,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
                 StorageService.saveLastTone(tone);
               },
+              onSubjectChanged: (newSubject) {
+                setState(() {
+                  _customSubjectText = newSubject;
+                });
+                StorageService.saveCustomSubject(newSubject);
+              },
               onBodyChanged: (newBody) {
                 setState(() {
                   _customBodyText = newBody;
@@ -653,8 +666,10 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               onResetTemplate: () {
                 setState(() {
+                  _customSubjectText = null;
                   _customBodyText = null;
                 });
+                StorageService.clearCustomSubject();
                 StorageService.clearCustomTemplate();
               },
             ).animate().fadeIn(duration: 700.ms),

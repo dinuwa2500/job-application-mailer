@@ -22,18 +22,12 @@ class EmailTemplate {
   static String generateSubject({
     required String roleTitle,
     String? companyName,
-    String? applicantName,
   }) {
     final cleanRole = roleTitle.trim().isEmpty ? 'intern software engineer' : roleTitle.trim();
     final cleanCompany = companyName?.trim() ?? '';
-    final cleanName = applicantName?.trim() ?? '';
 
-    if (cleanCompany.isNotEmpty && cleanName.isNotEmpty) {
-      return 'Application for $cleanRole - $cleanCompany ($cleanName)';
-    } else if (cleanCompany.isNotEmpty) {
+    if (cleanCompany.isNotEmpty) {
       return 'Application for $cleanRole - $cleanCompany';
-    } else if (cleanName.isNotEmpty) {
-      return 'Application for $cleanRole - $cleanName';
     }
     return 'Application for $cleanRole';
   }

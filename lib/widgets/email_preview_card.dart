@@ -6,6 +6,7 @@ class EmailPreviewCard extends StatefulWidget {
   final String body;
   final String selectedTone;
   final ValueChanged<String> onToneChanged;
+  final ValueChanged<String> onSubjectChanged;
   final ValueChanged<String> onBodyChanged;
   final VoidCallback onResetTemplate;
 
@@ -15,6 +16,7 @@ class EmailPreviewCard extends StatefulWidget {
     required this.body,
     required this.selectedTone,
     required this.onToneChanged,
+    required this.onSubjectChanged,
     required this.onBodyChanged,
     required this.onResetTemplate,
   });
@@ -25,17 +27,22 @@ class EmailPreviewCard extends StatefulWidget {
 
 class _EmailPreviewCardState extends State<EmailPreviewCard> {
   bool _isEditing = false;
+  late TextEditingController _subjectController;
   late TextEditingController _bodyController;
 
   @override
   void initState() {
     super.initState();
+    _subjectController = TextEditingController(text: widget.subject);
     _bodyController = TextEditingController(text: widget.body);
   }
 
   @override
   void didUpdateWidget(covariant EmailPreviewCard oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!_isEditing && oldWidget.subject != widget.subject) {
+      _subjectController.text = widget.subject;
+    }
     if (!_isEditing && oldWidget.body != widget.body) {
       _bodyController.text = widget.body;
     }
@@ -43,6 +50,7 @@ class _EmailPreviewCardState extends State<EmailPreviewCard> {
 
   @override
   void dispose() {
+    _subjectController.dispose();
     _bodyController.dispose();
     super.dispose();
   }
@@ -132,7 +140,7 @@ class _EmailPreviewCardState extends State<EmailPreviewCard> {
                 ),
                 const Spacer(),
                 IconButton(
-                  tooltip: _isEditing ? 'Done Editing' : 'Edit Email Body',
+                  tooltip: _isEditing ? 'Done Editing' : 'Edit Subject & Body',
                   icon: Icon(
                     _isEditing ? Icons.check_circle_rounded : Icons.edit_note_rounded,
                     color: _isEditing ? const Color(0xFF10B981) : theme.colorScheme.primary,
@@ -195,52 +203,74 @@ class _EmailPreviewCardState extends State<EmailPreviewCard> {
                 const SizedBox(height: 14),
 
                 // Subject Box
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                InkWell(
+                  onTap: _isEditing ? null : () => setState(() => _isEditing = true),
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: _isEditing ? 4 : 12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                      ),
                     ),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Subject: ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
-                          fontSize: 13,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          widget.subject,
+                    child: Row(
+                      children: [
+                        Text(
+                          'Subject: ',
                           style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () => _copySubject(context),
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.copy_rounded,
-                            size: 16,
+                            fontWeight: FontWeight.bold,
                             color: theme.colorScheme.primary,
+                            fontSize: 13,
                           ),
                         ),
-                      ),
-                    ],
+                        Expanded(
+                          child: _isEditing
+                              ? TextFormField(
+                                  controller: _subjectController,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                    color: theme.colorScheme.onSurface,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(vertical: 8),
+                                    border: InputBorder.none,
+                                    hintText: 'Enter custom email subject...',
+                                  ),
+                                  onChanged: (newVal) {
+                                    widget.onSubjectChanged(newVal);
+                                  },
+                                )
+                              : Text(
+                                  widget.subject,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                    color: theme.colorScheme.onSurface,
+                                  ),
+                                ),
+                        ),
+                        InkWell(
+                          onTap: () => _copySubject(context),
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              Icons.copy_rounded,
+                              size: 16,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 14),

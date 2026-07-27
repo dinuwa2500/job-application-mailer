@@ -5,6 +5,7 @@ import '../models/user_profile.dart';
 class StorageService {
   static const String _profileKey = 'user_profile_data';
   static const String _customTemplateKey = 'custom_email_template';
+  static const String _customSubjectKey = 'custom_email_subject';
   static const String _lastRoleKey = 'last_chosen_role';
   static const String _lastCustomRoleKey = 'last_custom_role';
   static const String _lastRecipientKey = 'last_recipient_email';
@@ -45,6 +46,21 @@ class StorageService {
   static Future<void> clearCustomTemplate() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_customTemplateKey);
+  }
+
+  static Future<String?> getCustomSubject() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_customSubjectKey);
+  }
+
+  static Future<void> saveCustomSubject(String subject) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_customSubjectKey, subject);
+  }
+
+  static Future<void> clearCustomSubject() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_customSubjectKey);
   }
 
   static Future<String?> getLastChosenRole() async {
